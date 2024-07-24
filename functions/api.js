@@ -1,7 +1,9 @@
-const express = require("express")
+const express = require("express");
+const serverless = require("serverless-http");
 const cors = require("cors");
-const app = express()
-const port = 3000
+const app = express();
+const router = express.Router();
+
 const jokes = [
     {
       id: 1,
@@ -28,20 +30,20 @@ const jokes = [
       title: "Why did the bicycle fall over?",
       content: "Because it was two-tired!"
     }
-  ];
-  
-  app.use(cors());
+];
 
-app.get('/',(req,res)=>{
-    res.send("Hello World")
-})
+app.use(cors());
 
-app.get('/api/jokes',(req,res)=>{
+router.get('/', (req, res) => {
+    res.send("Hello World");
+});
+
+router.get('/jokes', (req, res) => {
   const randomIndex = Math.floor(Math.random() * jokes.length);
   const randomJoke = jokes[randomIndex];
   res.json(randomJoke);
-})
+});
 
-  app.listen(port, () => {
-      console.log(`Example app listening at http://localhost:${port}`);
-  });
+app.use('/.netlify/functions/api', router);
+
+module.exports.handler = serverless(app);
